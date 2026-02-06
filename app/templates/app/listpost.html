@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% if posts %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 md:p-6">
+      {% for post in page_obj %}
+        <div class="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+          <a href="{% url 'app:detail-post' post.pk %}" class="block">
+            <!-- Image container with fixed aspect -->
+            <div class="aspect-[4/3] overflow-hidden bg-gray-100">
+              <img 
+                src="{{ post.post_img.url }}" 
+                alt="{{ post.post_alt|default:post.post_name }}" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:brightness-90"
+                loading="lazy" 
+              >
+            </div>
+
+            <!-- Overlay + title (centered bottom, fade-in) -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-4 left-0 right-0 px-4 text-center">
+              <p class="text-white text-lg font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-y-4 group-hover:translate-y-0">
+                {{ post.post_name }}
+              </p>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <p class="text-xl text-gray-600 mb-6">No posts found!</p>
+      <a href="{% url 'app:create-post' %}" 
+         class="inline-block px-8 py-4 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+        Create Your First Post
+      </a>
+    </div>
+  {% endif %}
+
+{% comment %} Pagination {% endcomment %}
+
+{% if is_paginated %}
+<nav class="flex justify-center mt-10 mb-8">
+  <ul class="inline-flex items-center -space-x-px rounded-md shadow-sm">
+    {% if page_obj.has_previous %}
+      <li>
+        <a href="?page={{ page_obj.previous_page_number }}"
+           class="px-4 py-3 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50">
+          Previous
+        </a>
+      </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li>
+          <span class="px-4 py-3 bg-fuchsia-600 text-white font-medium border border-fuchsia-600">
+            {{ num }}
+          </span>
+        </li>
+      {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+        <li>
+          <a href="?page={{ num }}"
+             class="px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li>
+        <a href="?page={{ page_obj.next_page_number }}"
+           class="px-4 py-3 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50">
+          Next
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

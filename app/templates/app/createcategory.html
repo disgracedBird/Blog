@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<h1 class="text-3xl text-center text-fuchsia-600">Create Category</h1>
+    <form method="post" class="flex flex-col justify-between items-center space-y-6 m-auto mb-8 w-[75%]"> {% csrf_token %}
+        <div class="flex justify-center items-left w-[50%] flex-col">  
+            <label for="id_category" class="required">Category</label>     
+            {{form.category|add_class:"w-[100%] rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-90 placeholder:text-gray-40 shadow-sm transition-all duration-20 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 focus:ring-offset-2 focus:shadow-md hover:border-gray-400 outline-none"}}
+        </div>
+        <div class="flex justify-center items-left w-[50%] flex-col">
+            <label for="id_category_img">Image</label>
+            {{form.category_img|add_class:"w-[100%]"}}
+        </div>
+        <button type="submit" class="rounded bg-fuchsia-600 text-white hover:bg-fuchsia-700 active:bg-fuchsia-800 px-6 py-3 self-center text-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">Add</button>
+    </form>
+{% endblock %}

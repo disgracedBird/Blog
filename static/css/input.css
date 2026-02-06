@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.required::after{
+    content: '*';
+    top: 0;
+    left: 0;
+    color: red;
+}

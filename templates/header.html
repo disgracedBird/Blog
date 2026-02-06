@@ -1,0 +1,12 @@
+<nav class="flex justify-between items-center py-2.5 px-5 sticky top-0 bg-white z-50">
+    <div class="text-3xl"><a href="{% url 'index' %}">Port</a></div>
+    <ul class="flex space-x-4">
+        <li><a href="{% url 'app:list-posts' %}">Posts</a></li>
+        <li><a href="">Categories</a></li>
+        {% if not user.is_authenticated %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        {% else %}
+        <li><a href="{% url 'account' %}">Account</a></li>
+        {% endif %}
+    </ul>
+</nav>

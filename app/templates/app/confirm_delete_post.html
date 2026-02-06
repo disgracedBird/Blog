@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-3xl text-center text-red-600">Confirm Delete</h1>
+<div class="p-6 flex flex-col items-center">
+    <h1>Are you sure you want to delete {{post.post_name}}?</h1>
+    <p class="text-red-400">This action cannot be undone!</p>
+
+    <form method="post" class="space-x-6"> {% csrf_token %}
+        <input type="submit" name="delete" value="Confirm" class="cursor-pointer rounded bg-red-50 text-red-700 hover:bg-red-100 active:bg-red-200 px-6 py-3 text-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg mb-2" />
+        <button type="button" class="rounded bg-gray-50 text-gray-700 hover:bg-gray-100 active:bg-gray-200 px-6 py-3 self-center text-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-md"><a href="{% url 'app:detail-post' post.pk %}">Cancel</a></button>
+    </form>
+</div> 
+{% endblock %}
