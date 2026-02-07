@@ -19,8 +19,14 @@ A simple, clean blog platform built with **Django**.
 ## Currently in progress
 
 - Search & filtering
-- Add Posts to index page
 - Link categories
+
+## Changes
+
+- Fixed the signup form not working
+- Categories and their posts now show up on index page
+- Added password hashers
+- Fixed some pages where being logged in wasnt required
 
 ## Tech stack
 

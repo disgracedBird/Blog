@@ -14,6 +14,17 @@ from .forms import ProfileForm, UserForm, CommentForm
 class IndexView(TemplateView):
     template_name = 'index.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = Category.objects.all()
+
+        for category in categories:
+            category.recent_posts = category.post_category.order_by('-post_created_at')[:8]
+        
+        context['categories'] = categories
+        context['posts'] = Post.objects.order_by('-post_created_at')[:8]
+        return context
+
 
 def UserLogin(request):
     if request.method == 'POST':
@@ -32,7 +43,8 @@ def UserLogout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-class UserAccount(TemplateView):
+class UserAccount(LoginRequiredMixin, TemplateView):
+    login_url = 'login'
     template_name = 'account.html'
 
 def UserSignup(request):
@@ -53,9 +65,15 @@ def UserSignup(request):
 
             return HttpResponseRedirect(reverse('login'))
     
-    return render(request, 'signup.html', context={'user_form' : UserForm, 'profile' : ProfileForm})
+    context = {
+        'user_form': UserForm(),
+        'profile_form': ProfileForm(),
+    }
+    
+    return render(request, 'signup.html', context)
 
 class CreatePost(LoginRequiredMixin, CreateView):
+    login_url = 'login'
     model = Post
     fields = ['post_category', 'post_img', 'post_name', 'post_alt', 'post_description']
     template_name = 'app/createpost.html'
@@ -66,21 +84,32 @@ class CreatePost(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 class CreateCategory(LoginRequiredMixin, CreateView):
+    login_url = 'login'
     model = Category
     fields = '__all__'
     template_name = 'app/createcategory.html'
     success_url = reverse_lazy('app:create-category')
 
 class UpdatePost(LoginRequiredMixin, UpdateView):
+    login_url = 'login'
     model = Post
     fields = ['post_category', 'post_img', 'post_name', 'post_alt', 'post_description']
     template_name = 'app/createpost.html'
 
-class DeletePost(DeleteView):
+class DeletePost(LoginRequiredMixin, DeleteView):
+    login_url = 'login'
     model = Post
     template_name = 'app/confirm_delete_post.html'
     context_object_name = 'post'
     success_url = reverse_lazy('app:list-posts')
+
+class DeleteCategory(LoginRequiredMixin, DeleteView):
+    login_url = 'login'
+    model = Category
+    template_name = 'app/confirm_delete_category.html'
+    context_object_name = 'category'
+    success_url = reverse_lazy('index')
+
 
 class DetailPost(FormMixin, DetailView):
     model = Post

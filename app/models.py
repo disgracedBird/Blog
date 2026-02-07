@@ -20,7 +20,7 @@ class Category(models.Model):
         return self.category
 
 class Post(models.Model):
-    post_category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    post_category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='post_category')
     post_img = models.ImageField(upload_to='posts')
     post_name = models.CharField(max_length=200)
     post_alt = models.CharField(max_length=200, blank=True, null=True)

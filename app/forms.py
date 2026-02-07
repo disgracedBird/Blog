@@ -35,8 +35,6 @@ class ProfileForm(forms.ModelForm):
 
         self.fields['profile_link'].widget.attrs.update({'class': base_input})
 
-        self.fields['profile_email'].widget.attrs.update({'class': base_input})
-
         self.fields['profile_number'].widget.attrs.update({'class': base_input})
 
 class CommentForm(forms.ModelForm):
