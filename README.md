@@ -5,19 +5,20 @@ A simple, clean blog platform built with **Django**.
 ## Features
 
 - User authentication
-  - Sign up / Login / Logout
+- Sign up / Login / Logout
 - Posts
-  - Create, edit, delete your own posts
-  - Rich text support
-  - Image upload
+- Create, edit, delete your own posts
+- Rich text support
+- Image upload
 - Categories
-  - Create and manage post categories
+- Create and manage post categories
 - Responsive design (Tailwind CSS)
 - Clean admin interface
+- Comment system under posts
 
 ## Currently in progress
 
-- Comment system under posts
+-
 - Search & filtering
 
 ## Tech stack
@@ -25,6 +26,5 @@ A simple, clean blog platform built with **Django**.
 - Django 5.x
 - Python 3.11+
 - Tailwind CSS
-- SQLite (development) 
+- SQLite (development)
 - django-widget-tweaks (form styling)
-
