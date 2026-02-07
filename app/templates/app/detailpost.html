@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="max-w-4xl w-full mx-auto my-6 px-4 sm:px-6 lg:px-8">
   <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+
     <!-- Header / Actions -->
     {% if user.is_authenticated %}
     <div class="flex justify-end gap-4 p-6 border-b border-gray-100">
@@ -32,24 +34,64 @@
         {{ post.post_name }}
       </h1>
 
-  
-<!-- Author and dates -->
-<div class="text-gray-600 text-sm mb-6 space-y-1">
-  <p>By {{ post.author }}</p>
+      <!-- Author and dates -->
+      <div class="text-gray-600 text-sm mb-6 space-y-1">
+        <p>By {{ post.author }}</p>
 
-  {% if post.post_modified_at and post.post_modified_at|date:"Y-m-d H:i:s" != post.post_created_at|date:"Y-m-d H:i:s" %}
-  <p>Last edited on {{ post.post_modified_at|date:"F d, Y" }}</p>
-{% else %}
-  <p>Created on {{ post.post_created_at|date:"F d, Y" }}</p>
-{% endif %}
-</div>
+        {% if post.post_modified_at and post.post_modified_at|date:"Y-m-d H:i:s" != post.post_created_at|date:"Y-m-d H:i:s" %}
+          <p>Last edited on {{ post.post_modified_at|date:"F d, Y" }}</p>
+        {% else %}
+          <p>Created on {{ post.post_created_at|date:"F d, Y" }}</p>
+        {% endif %}
+      </div>
 
       {% if post.post_description %}
       <div class="prose prose-lg max-w-none text-gray-700">
         {{ post.post_description|linebreaks }}
       </div>
       {% endif %}
+
+      <!-- Comments section – now inside the card -->
+      <div class="mt-12 border-t border-gray-200 pt-8">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6">
+          Comments <span class="text-gray-500 font-normal">({{ comments.count }})</span>
+        </h3>
+
+        <!-- Comment form -->
+        {% if user.is_authenticated %}
+          <form method="post" class="mb-10">
+            {% csrf_token %}
+            <div class="mb-4">
+              {{ comment_form.comment|add_class:"w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent min-h-[120px] resize-y" }}
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" 
+                      class="rounded bg-fuchsia-600 text-white hover:bg-fuchsia-700 active:bg-fuchsia-800 px-6 py-3 text-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">
+                Post Comment
+              </button>
+            </div>
+          </form>
+        {% else %}
+          <div class="mb-10 text-center text-gray-600">
+            <p>Please <a href="{% url 'login' %}" class="text-fuchsia-600 hover:underline font-medium">log in</a> to leave a comment.</p>
+          </div>
+        {% endif %}
+
+        <!-- List of comments -->
+        {% for comment in comments %}
+          <div class="border-b border-gray-200 pb-6 mb-6 last:pb-0 last:mb-0 last:border-b-0">
+            <div class="flex items-baseline gap-3 mb-1">
+              <span class="font-medium text-gray-900">{{ comment.user.username }}</span>
+              <span class="text-sm text-gray-500">• {{ comment.created_at|date:"F d, Y H:i" }}</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed">{{ comment.comment|linebreaks }}</p>
+          </div>
+        {% empty %}
+          <p class="text-gray-500 text-center py-6">No comments yet. Be the first to share your thoughts!</p>
+        {% endfor %}
+      </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

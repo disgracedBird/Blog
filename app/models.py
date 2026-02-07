@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_picture = models.ImageField(null=True, blank=True, upload_to='profilepictures')
     profile_link = models.URLField(blank=True, null=True)
     profile_number = models.CharField(max_length=11, null=True, blank=True)
@@ -25,7 +25,7 @@ class Post(models.Model):
     post_name = models.CharField(max_length=200)
     post_alt = models.CharField(max_length=200, blank=True, null=True)
     post_description = models.TextField(blank=True, null=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     post_created_at = models.DateTimeField(auto_now_add=True, editable=False)
     post_modified_at = models.DateTimeField(auto_now=True, editable=False, db_index=True)
 
@@ -40,11 +40,12 @@ class Post(models.Model):
         return self.post_name
     
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,related_name='comments')
 
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False, db_index=True)
+    
 
     class Meta:
         ordering = ['-created_at']

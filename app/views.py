@@ -4,14 +4,16 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import FormMixin
 
 from django.contrib.auth import login, logout, authenticate
 
 from .models import Post, Category
-from .forms import ProfileForm, UserForm
+from .forms import ProfileForm, UserForm, CommentForm
 
 class IndexView(TemplateView):
     template_name = 'index.html'
+
 
 def UserLogin(request):
     if request.method == 'POST':
@@ -80,10 +82,33 @@ class DeletePost(DeleteView):
     context_object_name = 'post'
     success_url = reverse_lazy('app:list-posts')
 
-class DetailPost(DetailView):
+class DetailPost(FormMixin, DetailView):
     model = Post
     template_name = 'app/detailpost.html'
     context_object_name = 'post'
+    form_class = CommentForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        context['comments'] = self.object.comments.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()  # get the current Post
+        form = self.get_form()
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = self.object          # ← Link to the current post
+            comment.user = request.user         # ← Link to the logged-in user
+            comment.save()
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        # After save, redirect back to this same detail page
+        return reverse('app:detail-post', kwargs={'pk': self.object.pk})
 
 class ListPost(ListView):
     model = Post
