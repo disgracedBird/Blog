@@ -18,8 +18,9 @@ A simple, clean blog platform built with **Django**.
 
 ## Currently in progress
 
--
 - Search & filtering
+- Add Posts to index page
+- Link categories
 
 ## Tech stack
 
