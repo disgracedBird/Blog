@@ -16,12 +16,15 @@ class Category(models.Model):
     category = models.CharField(max_length=50, unique=True)
     category_img = models.ImageField(blank=True, null=True, upload_to='categoryimages')
 
+    def get_absolute_url(self):
+        return reverse_lazy("app:detail-category", kwargs={"pk": self.pk})
+    
     def __str__(self):
         return self.category
 
 class Post(models.Model):
-    post_category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='post_category')
-    post_img = models.ImageField(upload_to='posts')
+    post_category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
+    post_img = models.ImageField(upload_to='posts', blank=True, null=True)
     post_name = models.CharField(max_length=200)
     post_alt = models.CharField(max_length=200, blank=True, null=True)
     post_description = models.TextField(blank=True, null=True)

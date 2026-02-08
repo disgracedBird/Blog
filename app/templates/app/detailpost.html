@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load widget_tweaks %}
 
 {% block content %}
@@ -21,11 +22,19 @@
 
     <!-- Image -->
     <div class="rounded overflow-hidden bg-gray-100">
-      <img 
-        src="{{ post.post_img.url }}" 
-        alt="{{ post.post_alt|default:post.post_name }}" 
-        class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-      >
+      {% if post.post_img %}
+        <img 
+          src="{{ post.post_img.url }}" 
+          alt="{{ post.post_alt|default:post.post_name }}" 
+          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        >
+      {% else %}
+        <img 
+          src="{% static 'imgs/default.jpg' %}" 
+          alt="Default image" 
+          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        >
+      {% endif %}
     </div>
 
     <!-- Content -->
@@ -66,7 +75,7 @@
             </div>
             <div class="flex justify-end">
               <button type="submit" 
-                      class="rounded bg-fuchsia-600 text-white hover:bg-fuchsia-700 active:bg-fuchsia-800 px-6 py-3 text-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-md">
+                      class="px-10 py-4 bg-fuchsia-600 text-white rounded-xl hover:bg-fuchsia-700 active:bg-fuchsia-800 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg text-lg font-medium">
                 Post Comment
               </button>
             </div>

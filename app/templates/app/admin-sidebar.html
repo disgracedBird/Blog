@@ -1,8 +1,4 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<h1 class="text-3xl text-center text-fuchsia-600">Welcome back, {{user.username}}!</h1>
-<nav class="flex flex-col w-64 p-6 space-y-4 text-gray-700 font-medium">
+<nav class="flex flex-col p-6 space-y-4 text-gray-700 font-medium">
     <ul class="space-y-2">
       <li>
         <a href="{% url 'app:create-post' %}" class="block px-4 py-3 rounded-lg hover:bg-fuchsia-50 hover:text-fuchsia-700 transition">
@@ -16,4 +12,3 @@
       </li>
     </ul>
   </nav>
-{% endblock %}

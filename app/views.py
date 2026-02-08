@@ -11,21 +11,13 @@ from django.contrib.auth import login, logout, authenticate
 from .models import Post, Category
 from .forms import ProfileForm, UserForm, CommentForm
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+# Main View
 class IndexView(TemplateView):
     template_name = 'index.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        categories = Category.objects.all()
-
-        for category in categories:
-            category.recent_posts = category.post_category.order_by('-post_created_at')[:8]
-        
-        context['categories'] = categories
-        context['posts'] = Post.objects.order_by('-post_created_at')[:8]
-        return context
-
-
+# User related views.
 def UserLogin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -72,6 +64,7 @@ def UserSignup(request):
     
     return render(request, 'signup.html', context)
 
+# Post related views (CRUD)
 class CreatePost(LoginRequiredMixin, CreateView):
     login_url = 'login'
     model = Post
@@ -82,13 +75,6 @@ class CreatePost(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-
-class CreateCategory(LoginRequiredMixin, CreateView):
-    login_url = 'login'
-    model = Category
-    fields = '__all__'
-    template_name = 'app/createcategory.html'
-    success_url = reverse_lazy('app:create-category')
 
 class UpdatePost(LoginRequiredMixin, UpdateView):
     login_url = 'login'
@@ -102,14 +88,6 @@ class DeletePost(LoginRequiredMixin, DeleteView):
     template_name = 'app/confirm_delete_post.html'
     context_object_name = 'post'
     success_url = reverse_lazy('app:list-posts')
-
-class DeleteCategory(LoginRequiredMixin, DeleteView):
-    login_url = 'login'
-    model = Category
-    template_name = 'app/confirm_delete_category.html'
-    context_object_name = 'category'
-    success_url = reverse_lazy('index')
-
 
 class DetailPost(FormMixin, DetailView):
     model = Post
@@ -143,5 +121,68 @@ class ListPost(ListView):
     template_name = 'app/listpost.html'
     context_object_name = 'posts'
     paginate_by = 12
+
+# Category related views (CRUD)
+class CreateCategory(LoginRequiredMixin, CreateView):
+    login_url = 'login'
+    model = Category
+    fields = '__all__'
+    template_name = 'app/createcategory.html'
+    success_url = reverse_lazy('app:create-category')
+
+class UpdateCategory(LoginRequiredMixin, UpdateView):
+    login_url = 'login'
+    model = Category
+    fields = '__all__'
+    template_name = 'app/createcategory.html'
+
+class DeleteCategory(LoginRequiredMixin, DeleteView):
+    login_url = 'login'
+    model = Category
+    template_name = 'app/confirm_delete_category.html'
+    context_object_name = 'category'
+    success_url = reverse_lazy('index')
+
+class DetailCategory(DetailView):
+    context_object_name = 'category'
+    model = Category
+    template_name = 'app/detail_category.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        posts = self.object.posts.all().order_by('-post_created_at')
+        
+        paginator = Paginator(posts, 9)
+        page = self.request.GET.get('page', 1)
+
+        try:
+            paginated_posts = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_posts = paginator.page(1)
+        except EmptyPage:
+            paginated_posts = paginator.page(paginator.num_pages)
+
+        context['posts'] = paginated_posts
+        context['paginator'] = paginator
+        context['page_obj'] = paginated_posts 
+
+        return context
+
+class ListCategory(ListView):
+    context_object_name = 'categories'
+    model = Category
+    template_name = 'app/list_category.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = Category.objects.filter(posts__isnull=False).distinct()
+
+        for category in categories:
+            category.recent_posts = category.posts.order_by('-post_created_at')[:5]
+        
+        context['categories'] = categories
+        context['posts'] = Post.objects.order_by('-post_created_at')[:5]
+        return context
 
 # Create your views here.
